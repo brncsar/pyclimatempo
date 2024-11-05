@@ -159,7 +159,7 @@ def generate_weather_image(data, daily_forecast):
         
         # Recorta o fundo do card e aplica o desfoque
         card_background = img.crop((card_x, y_offset, card_x + card_width, y_offset + card_height))
-        blurred_background = card_background.filter(ImageFilter.GaussianBlur(radius=5))
+        blurred_background = card_background.filter(ImageFilter.GaussianBlur(radius=13))
 
         # Cria uma camada transparente com o fundo desfocado
         card_layer = Image.new("RGBA", (card_width, card_height), (0, 0, 0, 0))
@@ -183,6 +183,14 @@ def generate_weather_image(data, daily_forecast):
 
         # Insere os ícones e textos no card
         img.paste(icon, (card_x + 10, y_offset + 10), icon)
+
+        # Exibe as temperaturas mínima e máxima
+        min_temp = day['temperature']['min']
+        max_temp = day['temperature']['max']
+        temp_text = f"Min: {min_temp}°C, Max: {max_temp}°C"
+        temp_bbox = d.textbbox((0, 0), temp_text, font=font_small)
+        temp_x = center_x - (temp_bbox[2] - temp_bbox[0]) // 2
+        d.text((temp_x, y_offset + 90), temp_text, fill="white", font=font_small)    
         
         
         # Centraliza o dia da semana
@@ -203,6 +211,8 @@ def generate_weather_image(data, daily_forecast):
         precip_x = center_x - (precip_bbox[2] - precip_bbox[0]) // 2
         d.text((precip_x, text_y_offset + 100), precip_text, fill="white", font=font_small)
         #d.text((card_x + 50, y_offset + 100), condition, fill="white", font=font_small)
+
+        
 
     img.save("weather_image.png")
 
